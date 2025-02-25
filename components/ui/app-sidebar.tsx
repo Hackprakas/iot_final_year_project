@@ -47,7 +47,7 @@ export function AppSidebar() {
         <Sidebar>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Application</SidebarGroupLabel>
+                    <div className="font-extrabold my-8 flex justify-center">IE Management System</div>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
