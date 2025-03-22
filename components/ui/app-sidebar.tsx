@@ -1,4 +1,4 @@
-import { Calendar, ChevronUp, Home, Inbox, Search, Settings, User2 } from "lucide-react"
+import { Calendar, ChevronUp, Home, Inbox, Search, Settings, User2, MonitorCog } from "lucide-react"
 
 import {
     Sidebar,
@@ -17,34 +17,20 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const items = [
     {
         title: "Home",
-        url: "#",
+        url: "/dashboard",
         icon: Home,
     },
     {
-        title: "Inbox",
-        url: "#",
-        icon: Inbox,
+        title: "Equipment",
+        url: "/dashboard/monitor",
+        icon: MonitorCog,
     },
-    {
-        title: "Calendar",
-        url: "#",
-        icon: Calendar,
-    },
-    {
-        title: "Search",
-        url: "#",
-        icon: Search,
-    },
-    {
-        title: "Settings",
-        url: "#",
-        icon: Settings,
-    },
+
 ]
 
 export function AppSidebar() {
     return (
-        <Sidebar>
+        <Sidebar className="">
             <SidebarContent>
                 <SidebarGroup>
                     <div className="font-extrabold my-8 flex justify-center">IE Management System</div>
