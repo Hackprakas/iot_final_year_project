@@ -5,6 +5,9 @@ import { TypeAnimation } from 'react-type-animation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
+
+
+
 const LandingPage = () => {
   return (
     <motion.div
