@@ -2,10 +2,31 @@
 
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
+import { Button } from './ui/button';
+import { createRecord } from '@/actions/route1';
+import { generateResponse } from '@/actions/route2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
 
 const Dashboard = () => {
+    const handleClick = async () => {
+        try{
+        const res = await createRecord();
+        console.log("Response:" , res?.data);
+        }
+        catch(e){
+            console.log("Error in creating new record: " , e);
+        }
+    }
+    async function handleGemini(){
+        try{
+            const res = await generateResponse();
+            console.log("Response:" , res);
+        }
+        catch(e){
+            console.log("Error in generating response: " , e);
+        }
+    }
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
             {/* Energy Saved Card */}
@@ -71,6 +92,12 @@ const Dashboard = () => {
                     }]
                 }} />
             </div>
+            <Button variant={'default'} onClick={() => handleClick()}>
+                Test
+            </Button>
+            <Button variant={'default'} onClick={() => handleGemini()}>
+                Gemini
+            </Button>
         </div>
     );
 };
