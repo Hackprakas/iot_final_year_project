@@ -7,7 +7,9 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import Image from 'next/image';
 import machine2 from '../../../../public/machine.jpg'
 import mqtt from 'mqtt';
-import { m } from 'framer-motion';
+
+import { toast } from "sonner"
+
 import type { MqttClient } from 'mqtt';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement, BarElement);
@@ -80,6 +82,8 @@ const MachineStats = () => {
         mqttClient.on("error", (err) => console.error("❌ MQTT Connection Error:", err));
         mqttClient.on("close", () => console.log("🔌 MQTT Disconnected"));
 
+
+
         setClient(mqttClient);
 
 
@@ -89,21 +93,47 @@ const MachineStats = () => {
     }, []);
 
     useEffect(() => {
+
+        if (client) {
+            client.subscribe("iot/motor/warning");
+            client.on("message", (topic, message) => {
+                if (topic === "iot/motor/warning") {
+
+                    const messageString = message.toString();
+                    // console.log(`📡 Received message: ${message.toString()}`);
+                    console.log(`📡 Received message: ${messageString}`);
+                    toast.warning(messageString)
+                }
+
+            });
+        }
+    }, [client]);
+
+    useEffect(() => {
         if (client) {
             client.subscribe(MQTT_TOPIC);
             client.on("message", (topic, message) => {
-                const messageString = message.toString();
-                const messageObject = JSON.parse(messageString);
-                console.log(`📡 Received message: ${messageString}`);
-                if (messageObject.motorState === "0") {
-                    setMachineStatus("Stopped");
-                } else if (message.toString() === "1") {
-                    setMachineStatus("Running");
+                if (topic === MQTT_TOPIC) {
+
+                    const messageString = message.toString();
+                    const messageObject = JSON.parse(messageString);
+                    console.log(`📡 Received message: ${messageString}`);
+                    if (messageObject.motorState === "0") {
+                        setMachineStatus("Stopped");
+                    } else if (message.toString() === "1") {
+                        setMachineStatus("Running");
+                    }
                 }
             });
         }
     }
         , [client]);
+
+
+
+
+
+
 
     const toggleMotor = () => {
         if (client) {
