@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Circle } from 'lucide-react';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement, BarElement } from 'chart.js';
 import Image from 'next/image';
 import machine2 from '../../../../public/machine.jpg'
+import mqtt from 'mqtt';
+import { m } from 'framer-motion';
+import type { MqttClient } from 'mqtt';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement, BarElement);
 
@@ -35,6 +38,9 @@ const lineData = {
     ],
 };
 
+
+
+
 const doughnutData = {
     labels: ['Efficiency', 'Loss'],
     datasets: [
@@ -57,10 +63,55 @@ const barData = {
 };
 
 const MachineStats = () => {
-    const [machineStatus, setMachineStatus] = useState(machine.status);
 
-    const toggleMachineStatus = () => {
-        setMachineStatus(machineStatus === 'running' ? 'halted' : 'running');
+
+    const [client, setClient] = useState<MqttClient | null>(null);
+    const [machineStatus, setMachineStatus] = useState("stopped"); // Example state
+    const MQTT_BROKER = "ws://192.168.0.100:9001"; // Replace with your broker's IP
+    const MQTT_TOPIC = "iot/motor/live";
+
+    useEffect(() => {
+        const mqttClient = mqtt.connect(MQTT_BROKER, {
+            protocol: "ws", // Ensure WebSocket is used
+            reconnectPeriod: 1000,
+        });
+
+        mqttClient.on("connect", () => console.log("✅ Connected to MQTT via WebSockets"));
+        mqttClient.on("error", (err) => console.error("❌ MQTT Connection Error:", err));
+        mqttClient.on("close", () => console.log("🔌 MQTT Disconnected"));
+
+        setClient(mqttClient);
+
+
+        return () => {
+            mqttClient.end();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (client) {
+            client.subscribe(MQTT_TOPIC);
+            client.on("message", (topic, message) => {
+                const messageString = message.toString();
+                const messageObject = JSON.parse(messageString);
+                console.log(`📡 Received message: ${messageString}`);
+                if (messageObject.motorState === "0") {
+                    setMachineStatus("Stopped");
+                } else if (message.toString() === "1") {
+                    setMachineStatus("Running");
+                }
+            });
+        }
+    }
+        , [client]);
+
+    const toggleMotor = () => {
+        if (client) {
+            const command = machineStatus === "running" ? "1" : "2"; // "1" = OFF, "2" = ON
+            client.publish("iot/motor/control", command);
+            console.log(`📡 Sent command: ${command}`);
+            setMachineStatus(machineStatus === "running" ? "stopped" : "running");
+        }
     };
 
     return (
@@ -85,7 +136,7 @@ const MachineStats = () => {
                         <div>
 
                             <button
-                                onClick={toggleMachineStatus}
+                                onClick={toggleMotor}
                                 className={`mt-2 px-4 py-2 rounded-md text-white ${machineStatus === 'running' ? 'bg-red-500' : 'bg-green-500'}`}
                             >
                                 {machineStatus === 'running' ? 'Turn Off' : 'Turn On'}

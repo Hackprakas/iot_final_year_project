@@ -22,15 +22,7 @@ import {
 import Link from "next/link"
 
 
-const mqttClient = mqtt.connect("mqtt://localhost:1883");
 
-mqttClient.on("connect", () => {
-    console.log("Connected to MQTT Broker");
-    mqttClient.subscribe("iot/sensors");
-});
-
-//send a hi message to the topic
-mqttClient.publish("iot/sensors", "hi");
 
 export default function page() {
     return (
