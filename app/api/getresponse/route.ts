@@ -16,7 +16,7 @@ The data contains temperature readings in degrees Celsius and voltage readings i
 Analyze the following time-series data and provide insights:
 1. Identify any anomalies or outliers in temperature or voltage
 2. Detect patterns or trends over time
-3. Provide alerts if values exceed normal ranges (temperature: 10-40°C, voltage: 3.0-6.0V)
+3. Provide alerts if values exceed normal ranges (temperature: 10-40°C, voltage: 7.0-8.0V)
 4. Suggest possible actions if issues are detected
 5. Summarize the overall system health
 

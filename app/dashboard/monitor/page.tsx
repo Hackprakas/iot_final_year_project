@@ -74,8 +74,8 @@ const MachineStats = () => {
     const [temperature, setTemperature] = useState(0);
     const [voltage, setVoltage] = useState(0)
     const [response, setresponse] = useState("")
-    const [loading, setloading] = useState(false)
-    const MQTT_BROKER = "ws://192.168.0.100:9001"; // Replace with your broker's IP
+    const [loading, setloading] = useState(true)
+    const MQTT_BROKER = "ws://192.168.82.70:9001"; // Replace with your broker's IP
     const MQTT_TOPIC = "iot/motor/live";
 
     useEffect(() => {
@@ -111,24 +111,33 @@ const MachineStats = () => {
                 }
                 const decoder = new TextDecoder();
 
+                let newResponse = ""; // Start with an empty response
+
+                setresponse(""); // Clear previous response to prevent appending
+
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
-                    setresponse((prev: any) => prev + decoder.decode(value)); // Update UI dynamically
+                    newResponse += decoder.decode(value);
+                    setresponse(newResponse); // Update UI dynamically with the latest content
                 }
             }
             catch (e) {
                 console.log("Error in generating response: ", e);
             }
         }
+
         handleGemini();
         setloading(false);
 
-        setInterval(() => {
+        const interval = setInterval(() => {
             handleGemini();
         }, 60000);
 
+        return () => clearInterval(interval); // Cleanup interval on unmount
     }, []);
+
+
 
     useEffect(() => {
 
@@ -265,8 +274,8 @@ const MachineStats = () => {
 
                     </div>
                     <div className=''>
-                        <div className="p-6 w-full h-full flex justify-center">
-                            <div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center w-[400px]">
+                        <div className="p-6 w-full h-[620px]  flex justify-center">
+                            <div className="bg-white h-[620px] overflow-y-scroll p-4 rounded-lg shadow-md flex flex-col items-center w-[400px]">
                                 <div className='flex flex-row-reverse items-center'>
                                     <h3 className="text-lg font-medium mb-2 mr-4">AI-Driven Analytics</h3>
                                     <div className="w-10 h-10 mr-2 animate-spin">

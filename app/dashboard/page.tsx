@@ -1,5 +1,6 @@
 import * as React from "react"
 import mqtt from "mqtt";
+// export const dynamic = "force-static"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -20,6 +21,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import Link from "next/link"
+
 
 
 
@@ -64,6 +66,7 @@ export default function page() {
                         </Link>
                     </CardFooter>
                 </Card>
+
             </div>
         </div>
     )
